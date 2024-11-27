@@ -1,0 +1,12 @@
+{
+    "manifest_version": 3,
+    "name": "Extract MC Links By AR",
+    "version": "1.0",
+    "description": "Extracts and copies URLs under labels starting with 'MC'.",
+    "permissions": ["activeTab", "scripting", "clipboardWrite"],
+    "host_permissions": ["<all_urls>"],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  
