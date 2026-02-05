@@ -33,27 +33,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     // Function to extract MC links based on specific img src or no img tag
-    function extractMCLinks() {
-      const links = [];
-      document.querySelectorAll('tr').forEach((row) => {
-        // Check if the row contains any <img> tags
-        const imgTags = row.querySelectorAll('img');
-        
-        // Check if the row has no img tags, or contains an img with valid src
-        const validImg = imgTags.length === 0 || Array.from(imgTags).some(img => {
-          const src = img.src;
-          return src === 'https://brokersnapshot.com/images/icons/icon48_rating2_1.png' || src === '/images/icons/icon48_rating2_1.png';
-        });
-  
-        // If there's a valid image or no image tag, extract the MC link
-        if (validImg) {
-          const mcLink = row.querySelector('a[href*="MC"]');
-          if (mcLink) {
-            links.push(mcLink.href);  // Add the link to the result
-          }
-        }
-      });
-      return links;
+  function extractMCLinks() {
+  const links = [];
+
+  const allowedImages = [
+    '/images/icons/icon48_sos.png?v=Fupjh-ELjzhaztw0ZVLzIuHWshLxgRcxTa2-zMYSEig',
+    'https://brokersnapshot.com/images/icons/icon48_sos.png?v=Fupjh-ELjzhaztw0ZVLzIuHWshLxgRcxTa2-zMYSEig',
+    'https://brokersnapshot.com/images/icons/icon48_intrastate.png?v=aoMlfLa38oZaf2tSWuUyKwhq0Al4Fn-xkR50kmm4IVU'
+  ];
+
+  const allowedStatuses = [
+    'Authorized for Property',
+    'Authorized for Property, Private'
+  ];
+
+  document.querySelectorAll('tr').forEach((row) => {
+    const imgTags = row.querySelectorAll('img');
+
+    // Rule 1: Image filtering
+    let imageRulePassed = false;
+
+    if (imgTags.length === 0) {
+      imageRulePassed = true;
+    } else {
+      imageRulePassed = Array.from(imgTags).every(img =>
+        allowedImages.includes(img.src)
+      );
+    }
+
+    if (!imageRulePassed) return;
+
+    // Rule 2: Status filtering
+    const statusSpan = row.querySelector('span.green.bold');
+    if (!statusSpan) return;
+
+    const statusText = statusSpan.textContent.trim();
+    if (!allowedStatuses.includes(statusText)) return;
+
+    // Rule 3: Extract MC link
+    const mcLink = row.querySelector('a[href*="MC"]');
+    if (mcLink) {
+      links.push(mcLink.href);
     }
   });
-  
+
+  return links;
+}
+
+
+})
